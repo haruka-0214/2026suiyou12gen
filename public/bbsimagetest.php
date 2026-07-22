@@ -53,9 +53,42 @@ if (isset($_POST['body'])) {
   return;
 }
 
+// ページ数をURLクエリパラメータから取得。無い場合は1ページ目とみなす
+ $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+ // 1ページあたりの行数を決める
+ $count_per_page = 10;
+
+ // ページ数に応じてスキップする行数を計算
+ $skip_count = $count_per_page * ($page - 1);
+
+ // hogehogeテーブルの行数を SELECT COUNT で取得
+ $count_sth = $dbh->prepare('SELECT COUNT(*) FROM bbs_entries');
+
+ $count_sth->execute();
+
+ $count_all = $count_sth->fetchColumn();
+
+ if ($skip_count >= $count_all) {
+     // スキップする行数が全行数より多かったらおかしいのでエラーメッセージ表示し終了
+         print('このページは存在しません!');
+             return;
+             }
 // いままで保存してきたものを取得
 $select_sth = $dbh->prepare('SELECT * FROM bbs_entries ORDER BY created_at DESC');
+
+$select_sth = $dbh->prepare(
+  "SELECT *
+     FROM bbs_entries
+        ORDER BY id ASC
+           LIMIT :limit OFFSET :offset"
+           );
+
+$select_sth->bindValue(':limit', $count_per_page, PDO::PARAM_INT);
+$select_sth->bindValue(':offset', $skip_count, PDO::PARAM_INT);
+
 $select_sth->execute();
+
 ?>
 
 <head>
@@ -73,6 +106,8 @@ $select_sth->execute();
 
 <hr>
 
+
+
 <?php foreach($select_sth as $entry): ?>
   <dl style="margin-bottom: 1em; padding-bottom: 1em; border-bottom: 1px solid #ccc;">
     <dt>ID</dt>
@@ -87,9 +122,38 @@ $select_sth->execute();
         <img src="/image/<?= $entry['image_filename'] ?>" style="max-height: 10em;">
       </div>
       <?php endif; ?>
-    </dd>
-  </dl>
+      </dd>
+                                       </dl>
 <?php endforeach ?>
+<!-- ページ番号表示 -->
+
+<div style="margin-top:20px; text-align:center;">
+
+<?php
+// 全ページ数を計算
+ $total_pages = ceil($count_all / $count_per_page);
+ ?>
+
+ <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+
+   <?php if ($i == $page): ?>
+
+       <strong>
+             <?= $i ?>
+                 </strong>
+                   <?php else: ?>
+
+                       <a href="?page=<?= $i ?>">
+                             <?= $i ?>
+                                 </a>
+
+                                   <?php endif; ?>
+
+                                   <?php endfor; ?>
+
+                                   </div>
+
+
 
 
 <script>
