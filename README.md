@@ -33,6 +33,13 @@ services:
     image: nginx:latest
     ports:
     - 80:80
+
+mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD:root
+    ports:
+      - 3306:3306
 ```
 
 起動
