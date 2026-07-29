@@ -17,16 +17,16 @@ ssh ec2-user@<EC2のパブリックID> -i C:<鍵ファイルのパス>
 mkdir dockertest
 cd dockertest
 ```
-### screen起動
+screen起動
 ```
 screen
 ```
 
-### 設定ファイルを書く
+設定ファイルを書く
 ```
 vim compose.yml
 ```
-### 中身
+中身
 ```
 services:
   web:
@@ -35,26 +35,26 @@ services:
     - 80:80
 ```
 
-### 起動
+起動
 ```
 docker compose up
 ```
 
 起動できたらブラウザで確認
 
-### データベース作成
+### MySQLデータベース作成
 MySQLに接続
 ```
-docker compose exec mysql -u root
+docker compose exec mysql mysql -u root
 ```
 
-### データベースを作成
+データベースを作成
 ```
 CREATE DATABASE example_db;
 USE example_db;
 ```
 
-### 掲示板用テーブルを作成
+掲示板用テーブルを作成
 ```
 CREATE TABLE bbs_entries (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,12 +68,12 @@ docker compose upを再起動して確認。
 
 ## nginx
 
-### 設定ファイル用のディレクトリ作成
+設定ファイル用のディレクトリ作成
 ```
 mkdir nginx
 mkdir nginx/conf.d
 ```
-### 設定ファイル作成
+設定ファイル作成
 ```
 vim nginx/conf.d/default.conf
 ```
@@ -87,7 +87,7 @@ server {
     root /var/www/public;
 }
 ```
-### 配信するファイルを置くディレクトリとファイル作成
+配信するファイルを置くディレクトリとファイル作成
 ```
 mkdir public
 vim public/index.html
@@ -97,7 +97,7 @@ vim public/index.html
 <!DOCTYPE html>
 <h1>Hello world</h1>
 ```
-### compose.ymlを編集
+compose.ymlを編集
 ```
 services:
   web:
