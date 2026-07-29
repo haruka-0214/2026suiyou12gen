@@ -11,29 +11,31 @@
 ```
 ssh ec2-user@<EC2のパブリックID> -i C:<鍵ファイルのパス>
 ```
-### screen起動
-```
-screen
-```
 ### docker compose
 まず作業用ディレクトリ作成、その中に移動
 ```
 mkdir dockertest
 cd dockertest
 ```
-設定ファイルを書く
+### screen起動
+```
+screen
+```
+
+### 設定ファイルを書く
 ```
 vim compose.yml
 ```
-中身
-````
+### 中身
+```
 services:
   web:
     image: nginx:latest
     ports:
     - 80:80
 ```
-起動
+
+### 起動
 ```
 docker compose up
 ```
@@ -61,4 +63,50 @@ CREATE TABLE bbs_entries (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 ```
+docker compose upを再起動して確認。
 
+
+## nginx
+
+### 設定ファイル用のディレクトリ作成
+```
+mkdir nginx
+mkdir nginx/conf.d
+```
+### 設定ファイル作成
+```
+vim nginx/conf.d/default.conf
+```
+中身
+```
+server {
+    listen       0.0.0.0:80;
+    server_name  _;
+    charset      utf-8;
+
+    root /var/www/public;
+}
+```
+### 配信するファイルを置くディレクトリとファイル作成
+```
+mkdir public
+vim public/index.html
+```
+中身
+```
+<!DOCTYPE html>
+<h1>Hello world</h1>
+```
+### compose.ymlを編集
+```
+services:
+  web:
+    image: nginx:latest
+    ports:
+        - 80:80
+    volumes:
+        - ./nginx/conf.d/:/etc/nginx/conf.d/
+        - ./public/:/var/www/public/
+```
+
+dockercomposeを再起動して確認
