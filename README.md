@@ -7,34 +7,58 @@
 １ページに１０件まで表示され投稿が増え続けるとページ数も自動で増えていきます。
 
 
-PCからAWS上のEC2へログイン
+### PCからAWS上のEC2へログイン
 ```
 ssh ec2-user@<EC2のパブリックID> -i C:<鍵ファイルのパス>
 ```
-#起動
+### screen起動
 ```
-cd リポジトリ名
-docker compse up
+screen
+```
+### docker compose
+まず作業用ディレクトリ作成、その中に移動
+```
+mkdir dockertest
+cd dockertest
+```
+設定ファイルを書く
+```
+vim compose.yml
+```
+中身
+````
+services:
+  web:
+    image: nginx:latest
+    ports:
+    - 80:80
+```
+起動
+```
+docker compose up
 ```
 
-#データベース作成
+起動できたらブラウザで確認
+
+### データベース作成
 MySQLに接続
 ```
 docker compose exec mysql -u root
 ```
 
-データベースを作成
+### データベースを作成
 ```
 CREATE DATABASE example_db;
 USE example_db;
 ```
 
-掲示板用テーブルを作成
+### 掲示板用テーブルを作成
 ```
 CREATE TABLE bbs_entries (
     id INT AUTO_INCREMENT PRIMARY KEY,
-        body TEXT NOT NULL,
-            image_filename TEXT DEFAULT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                );
+    body TEXT NOT NULL,
+    image_filename TEXT DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 ```
+
