@@ -9,7 +9,7 @@
 
 ### PCからAWS上のEC2へログイン
 ```
-ssh ec2-user@<EC2のパブリックID> -i C:<鍵ファイルのパス>
+ssh ec2-user@<EC2のパブリックID> -i <鍵ファイルのパス>
 ```
 ### docker compose
 まず作業用ディレクトリ作成、その中に移動
