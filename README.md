@@ -117,3 +117,7 @@ services:
 ```
 
 dockercomposeを再起動して確認
+
+```
+http://<EC2のパブリックIPアドレス>/
+```
