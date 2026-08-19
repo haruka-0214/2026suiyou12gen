@@ -1,4 +1,54 @@
-('mysql:host=mysql;dbname=example_db', 'root', '');
+<?php
+$dbh = new PDO('mysql:host=mysql;dbname=example_db', 'root', '');
+
+if (isset($_POST['body'])) {
+  // POSTで送られてくるフォームパラメータ body がある場合
+
+  $image_filename = null;
+  if (isset($_FILES['image']) && !empty($_FILES['image']['tmp_name'])) {
+    // アップロードされた画像がある場合
+    if (preg_match('/^image\//', $_FILES['image']['type']) !== 1) {
+                            // アップロードされたものが画像ではなかった場合処理を強制的に終了
+      header("HTTP/1.1 302 Found");
+    header("Location: ./bbsimagetest.php");
+    return;
+  }
+
+  // MIMEタイプをファイル内容から確認
+  $mime = mime_content_type($_FILES['image']['tmp_name']);
+
+  $allowed = [
+    'image/jpeg',
+    'image/png',
+    'image/gif'
+  ];
+  if (!in_array($mime, $allowed)) {
+    die('画像ファイルのみアップロードできます');
+  }
+
+  // 元のファイル名から拡張子を取得
+  $pathinfo = pathinfo($_FILES['image']['name']);
+  $extension = $pathinfo['extension'];
+
+  // 新しいファイル名を決める
+  $image_filename = strval(time()) . bin2hex(random_bytes(25)) . '.' . $extension;
+
+  $filepath = '/var/www/upload/image/' . $image_filename;
+  move_uploaded_file($_FILES['image']['tmp_name'], $filepath);
+
+
+  }
+
+  // insertする
+  $insert_sth = $dbh->prepare("INSERT INTO bbs_entries (body, image_filename) VALUES (:body, :image_filename)");
+  $insert_sth->execute([
+      ':body' => $_POST['body'],
+      ':image_filename' => $image_filename,
+  ]);
+
+  // 処理が終わったらリダイレクトする
+  // リダイレクトしないと，リロード時にまた同じ内容でPOSTすることになる
+  header("HTTP/1.1 302 Found");
 
 // POSTされた場合
 if (isset($_POST['body'])) {
